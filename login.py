@@ -4,20 +4,28 @@ import getpass
 import os
 import sys
 import time
+import addInformation
+import driver
 
 
-dirPath = "C:/Users/billy/CompSci/PythonProg/PasswordProject/users"
+driver.dirPath### = "C:/Users/billy/CompSci/PythonProg/PasswordProject/users"
 
-dir = os.listdir(dirPath)
+dir = os.listdir(driver.dirPath)
 
 def checkPassword(inputFile, userPassword):
     f = open(inputFile)
-    if "User Password: " + userPassword in inputFile:
+    #get second line
+    line = f.readline()
+    line = f.readline()
+    f.close()
+    #print(line[15:])
+    if (str(userPassword)+"\n") == line[15:]:
         print("User verified.\n")
         return True
     else:
+        print("The password is incorrect. Please try again.\n")
         return False
-    f.close()
+    
 
 def createUser():
 
@@ -25,22 +33,25 @@ def createUser():
     
     print("Creating New User")
     print("-----------------\n\n")
+
     
-    ###loop incase a user is making a duplicate user
+    #loop incase a user is making a duplicate user
     while(looping):
-        username = input("Enter username:\n")
+        username = input("Enter username:\n> ")
         if username+".txt" in dir:
             print("\nThat user already exists.")
             print("-------------------------\n")
         else:
-            ###break out of loop
+            #break out of loop
             looping = False
 
-    
+
+    #getpass.getpass() hides the inputted string from displaying in cmd
     password = getpass.getpass("\nEnter a login password:\n")
     passCheck = getpass.getpass("Please re-enter your password:\n")
 
-    ###loop until password verification passes
+
+    #loop until password verification passes
     looping = True
     while(looping):
     
@@ -50,15 +61,18 @@ def createUser():
             password = getpass.getpass("Enter a login password:\n")
             passCheck = getpass.getpass("Please re-enter your password:\n")
         else:
-            ###break out of loop
+            #break out of loop
             looping = False
 
-    ###write file in the specified directory and use the user's username as the file name
-    completePath = (os.path.join(dirPath, username+".txt"))
+    #write file in the specified directory and use the user's username as the file name
+    completePath = (os.path.join(driver.dirPath, username+".txt"))
+
 
     f = open(completePath, "w")
     f.write("Username: " + username)
     f.write("\nUser Password: " + password)
+    f.close
+
 
     print("User created!\n\nReturning to home screen in:")
     for i in range(-3,0):
@@ -76,41 +90,48 @@ def login():
         createUser()
 
     print("Which user would you like to login as:\n")
-    for file in dirPath:
-        print(file)
-    print("Return to Home Screen (Type Return)")
+    for file in os.scandir(driver.dirPath + "/"):
+        print(file.name[0:-4])
+    print("\nReturn to Home Screen (Type Return)")
 
-    choice = input("\n")
+    user = ""
     while(looping):
-        if (choice + ".txt") in dirPath:
+        choice = input("\n> ")
+        if os.path.exists(driver.dirPath + "/" + choice + ".txt"):
+            user = choice
             looping = False
         elif (choice.lower() == "return"):
             mainScreen()
         else:
             print("User not found. Please try again.\n")
-            choice = input("\n")
-        
 
-    password = getpass.getpass("\nEnter password:\n")
+    
+    #pass the requested file location and user name to the addInformation module
+    addInformation.userfile = driver.dirPath + "/" + user + ".txt"
+    addInformation.userName = user
+            
 
-    while(verified == False):
-        verified = checkPassword(os.path.join(dirPath, (choice + ".txt")), password)
+    while(verified != True):
+        password = getpass.getpass("\nEnter password:\n")
+        verified = checkPassword(os.path.join(driver.dirPath, (user + ".txt")), password)
 
-    ###Call next state
 
 
 
 def mainScreen():
     looping = True
-    choice = input("\n\nWelcome to Password Manager!\n-----------------------------\n\nWhat would you like to do?\n1. Login\n2. Create new User\n3. Exit\n\n")
+    choice = input("\nWhat would you like to do?\
+        \n\t1. Login\
+        \n\t2. Create new User\
+        \n\t3. Exit\n\n> ")
 
     while(looping):
         if(choice == "1" or choice.lower() == "login"):
+            looping = False
             login()
-            looping = False
         elif(choice == "2" or choice.lower() == "create new user"):
-            createUser()
             looping = False
+            createUser()
         elif(choice == "3" or choice.lower() == "exit"):
             sys.exit()
         else:
@@ -119,7 +140,12 @@ def mainScreen():
 
 
 def main():
+    print("\n\t\t\t------------------------------\
+        \n\t\t\t|Welcome to Password Manager!|\
+        \n\t\t\t------------------------------\n")
     mainScreen()
+    
 
+if __name__ == "__main__":
+    main()
 
-main()
