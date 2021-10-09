@@ -1,5 +1,5 @@
 import login
-import os
+import linecache
 import sys
 import driver
 
@@ -17,17 +17,24 @@ def chooseOptions():
         \n\t4. Redisplay All available Options (Type Redisplay)\
         \n\t5. Switch Users (Type Logout)\
         \n\t6. Exit (Type Exit)")
+
+
+
 def getContents():
+    counter = 0
     f = open(userfile, "r")
     line =f.readline()
     line = f.readline()
     while True:
+        counter += 1
         line = f.readline()
         if not line:
             break
         else:
-            print(line,end="")
+            print(str(counter) +". " + line,end="")
     f.close()
+
+
 
 def addToFile():
     f = open(userfile, "a")
@@ -38,21 +45,32 @@ def addToFile():
     writeString = "Website: {0}\tEmail: {1}\tUsername: {2}\tPassword: {3}\n".format(website,email,addUserName,addPassword)
 
     f.write(writeString)
-
+    f.flush()
     f.close()
 
-    sortFile()
+    #sortFile()
+
+
 
 def removeFromFile():
-    f = open(userfile, "w")
+
     getContents()
-    print("\nWhich account would you like to remove?\n")
+    print("\nWhich account would you like to remove? (Enter number)\n")
     choice = input("> ")
+
+    with open(userfile, "r+") as f:
+        
+        lines = f.readlines()
+        f.seek(0)
+        for line in lines:
+            if line != linecache.getline(userfile, (int(choice) + 2)):
+                f.write(line)
+                f.flush()
+        f.truncate()
+
     f.close()
 
-def sortFile():
-    f = open(userfile, "r")
-    f.close()
+
 
 def main():
     looping = True
@@ -69,14 +87,14 @@ def main():
 
     while(looping):
         print()
-        choice = input(">")
+        choice = input("> ")
         print()
 
         if choice.lower() == "add":
             addToFile()
 
         elif choice.lower() == "remove":
-            pass
+            removeFromFile()
 
         elif choice.lower() == "display":
             print()

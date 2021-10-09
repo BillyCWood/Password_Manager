@@ -1,12 +1,7 @@
 ###Author: Billy Wood
 
-import getpass
-import os
-import sys
-import time
-import addInformation
-import driver
-
+import getpass, os, sys, time, addInformation, driver, importlib
+import login
 
 driver.dirPath### = "C:/Users/billy/CompSci/PythonProg/PasswordProject/users"
 
@@ -19,13 +14,14 @@ def checkPassword(inputFile, userPassword):
     line = f.readline()
     f.close()
     #print(line[15:])
-    if (str(userPassword)+"\n") == line[15:]:
+    if (str(userPassword).strip()) == line[15:].strip():
         print("User verified.\n")
         return True
     else:
         print("The password is incorrect. Please try again.\n")
         return False
-    
+
+
 
 def createUser():
 
@@ -34,11 +30,13 @@ def createUser():
     print("Creating New User")
     print("-----------------\n\n")
 
-    
+    username = ""
+    password = ""
+
     #loop incase a user is making a duplicate user
     while(looping):
         username = input("Enter username:\n> ")
-        if username+".txt" in dir:
+        if username + ".txt" in dir:
             print("\nThat user already exists.")
             print("-------------------------\n")
         else:
@@ -70,7 +68,8 @@ def createUser():
 
     f = open(completePath, "w")
     f.write("Username: " + username)
-    f.write("\nUser Password: " + password)
+    f.write("\nUser Password: " + password + "\n")
+    f.flush()
     f.close
 
 
@@ -78,10 +77,12 @@ def createUser():
     for i in range(-3,0):
         print(abs(i))
         time.sleep(1)
+    importlib.reload(login)
     mainScreen()
 
 
-def login():
+
+def loginFunct():
     looping = True
     verified = False
 
@@ -114,7 +115,7 @@ def login():
     while(verified != True):
         password = getpass.getpass("\nEnter password:\n")
         verified = checkPassword(os.path.join(driver.dirPath, (user + ".txt")), password)
-
+    addInformation.main()
 
 
 
@@ -128,7 +129,7 @@ def mainScreen():
     while(looping):
         if(choice == "1" or choice.lower() == "login"):
             looping = False
-            login()
+            loginFunct()
         elif(choice == "2" or choice.lower() == "create new user"):
             looping = False
             createUser()
@@ -145,6 +146,7 @@ def main():
         \n\t\t\t------------------------------\n")
     mainScreen()
     
+
 
 if __name__ == "__main__":
     main()
