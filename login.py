@@ -144,7 +144,9 @@ def main():
     print("\n\t\t\t------------------------------\
         \n\t\t\t|Welcome to Password Manager!|\
         \n\t\t\t------------------------------\n")
-    mainScreen()
+    
+    while(True):
+        mainScreen()
     
 
 

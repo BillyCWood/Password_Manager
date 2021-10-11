@@ -1,7 +1,7 @@
-import login
-import linecache
-import sys
-import driver
+###Author: Billy Wood
+
+import linecache, sys
+import driver, login, editInformation
 
 dirPath = driver.dirPath
 
@@ -13,10 +13,11 @@ def chooseOptions():
     print("\nWhat would you like to do:\
         \n\t1. Add Password (Type Add)\
         \n\t2. Remove Password (Type Remove)\
-        \n\t3. Display All Stored Usernames and Passwords (Type Display)\
-        \n\t4. Redisplay All available Options (Type Redisplay)\
-        \n\t5. Switch Users (Type Logout)\
-        \n\t6. Exit (Type Exit)")
+        \n\t3. Edit Information(Type Edit)\
+        \n\t4. Display All Stored Usernames and Passwords (Type Display)\
+        \n\t5. Redisplay All available Options (Type Redisplay)\
+        \n\t6. Switch Users (Type Logout)\
+        \n\t7. Exit (Type Exit)")
 
 
 
@@ -26,11 +27,11 @@ def getContents():
     line =f.readline()
     line = f.readline()
     while True:
-        counter += 1
         line = f.readline()
         if not line:
             break
         else:
+            counter += 1
             print(str(counter) +". " + line,end="")
     f.close()
 
@@ -96,6 +97,31 @@ def main():
         elif choice.lower() == "remove":
             removeFromFile()
 
+        elif choice.lower() == "edit":
+            
+            loopingEdit = True
+
+            while(loopingEdit):
+                print()
+                getContents()
+                print("\nWhich account would you like to edit? (Enter line number)")
+
+                lineToEdit = input("> ")
+
+                print("\nIs this the account information you want to edit?\n")
+
+                lineChoice = linecache.getline(userfile, (int(lineToEdit) + 2))
+                print(lineChoice)
+
+                print("Type 'Yes' or 'No'")
+                yesOrNo = input("> ")
+                if yesOrNo.lower() == "yes":
+                    editInformation.main(userfile, (int(lineToEdit) + 1))
+                    loopingEdit = False
+                    
+                
+
+        
         elif choice.lower() == "display":
             print()
             getContents()
@@ -105,7 +131,7 @@ def main():
             chooseOptions()
 
         elif choice.lower() == "logout":
-            login.mainScreen()
+            looping = False
 
         elif choice.lower() == "exit":
             sys.exit()            
